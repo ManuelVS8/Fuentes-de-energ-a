@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="google" content="notranslate">
+    <title>Fuentes de energía</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+    <style>
+        /* ====== Reset & base ====== */
+        * { box-sizing: border-box; margin:0; padding:0; }
+        :root{
+            --blue:#001DFF;
+            --blue-dark:#04032B;
+            --blue-700:#1a3a5f;
+            --blue-600:#254fba;
+            --orange:#f59e42;
+            --orange-700:#e67e22;
+            --bg-grad-1:#1a3a5f;
+            --bg-grad-2:#0d2340;
+            --white:#ffffff;
+            --green:#2ecc71;
+            --red:#e74c3c;
+            --panel:#E8EAFF;
+            --card-base:#3498db;
+            --card-selected:#f1c40f;
+        }
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height:100vh; 
+            display:flex; 
+            justify-content:center; 
+            align-items: flex-start; 
+            padding: 20px 12px;
+            color:#333; 
+        }
+        .game-container{
+            background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12);
+            padding:1.2rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden;
+            display:flex; flex-direction:column;
+            margin-bottom: 2rem; 
+        }
+        header{ text-align:center; margin-bottom:.8rem; margin-top:1.5rem; }
+        h1{ color:var(--blue-dark); font-size:clamp(2rem,5.2vw,3.1rem); font-weight:900; letter-spacing:.5px; }
+        .subtitle{ color:var(--blue-700); font-size:clamp(1rem,3.5vw,1.25rem); margin-top:.25rem; }
+        .highlight-keyword{ color:var(--orange); font-weight:800; }
+
+        .btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800;
+            transition:transform .08s ease, box-shadow .2s ease, background-color .25s ease; min-width:140px; height:48px;
+            display:inline-flex; align-items:center; justify-content:center; font-size: 1rem; }
+        .btn:hover{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.12); }
+        .btn:active{ transform:translateY(0); }
+        .btn-primary{ background:var(--orange); }
+        .btn-primary:hover{ background:var(--orange-700); }
+        .btn-blue{ background:var(--blue-600); }
+        .btn-blue:hover{ filter:brightness(.9); }
+        .btn-ghost{ background:#e6f2ff; color:var(--blue-700); }
+        .btn-green{ background:var(--green); }
+        .btn-green:hover{ filter:brightness(.9); }
+        .btn-red{ background:var(--red); }
+        .btn-red:hover{ filter:brightness(.9); }
+
+        .screen{ display:none; animation:fadeIn .35s ease; flex-direction:column; flex:1; }
+        .screen.active{ display:flex; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+
+        .game-info{ display:flex; gap:.6rem; align-items:center; justify-content:space-between; margin:.4rem 0 1rem; flex-wrap:wrap; }
+        .timer{ font-weight:900; color:var(--blue-700); font-size:clamp(.95rem,2.3vw,1.15rem); }
+        .progress-bar{ flex:1; height:10px; background:#e6f2ff; border-radius:999px; overflow:hidden; }
+        .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--orange) 0%, var(--orange-700) 100%); transition:width .3s ease; }
+        .level-indicator{ font-weight:700; color: var(--blue-700); font-size: 0.9rem; background: #e6f2ff; padding: 4px 10px; border-radius: 20px; }
+
+        /* Pantalla Inicio */
+        .start-content{ display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; gap:1rem; padding:1rem; }
+        .advice-box{ background:var(--panel); border-left:4px solid var(--blue-700); padding:1rem 1.2rem; border-radius:12px;
+            color:var(--blue-700); max-width:760px; text-align:center; font-size:clamp(1rem,3vw,1.15rem); }
+        .start-image{ max-width: 300px; width: 100%; margin: 0 auto; }
+        
+        .mute-btn{ position:absolute; top:.8rem; right:1rem; background:linear-gradient(135deg, var(--orange), var(--orange-700)); color:#fff; border:2px solid #fff; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; z-index:20; transition: transform .2s, box-shadow .2s; }
+        .mute-btn:hover{ transform:scale(1.1); box-shadow:0 4px 12px rgba(245,158,66,.4); }
+        .mute-btn svg{ width:20px; height:20px; pointer-events:none; }
+
+        /* Pantalla Resumen */
+        .theory-content { padding: 10px; margin: 10px 0; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .theory-box { background: var(--panel); border-radius: 12px; padding: 1.2rem 1.4rem; line-height: 1.7; color: #444; font-size: clamp(0.85rem, 2.5vw, 1.05rem); }
+        .theory-box h2 { color: var(--blue-dark); font-size: clamp(1.1rem, 3vw, 1.3rem); margin-bottom: 0.6rem; font-weight: 900; }
+        .theory-box > p { margin-bottom: 0.8rem; }
+        .theory-box ul { list-style: none; padding: 0; margin-bottom: 0.5rem; }
+        .theory-box li { padding: 0.35rem 0 0.35rem 1.4rem; position: relative; }
+        .theory-box li::before { content: '•'; position: absolute; left: 0; color: var(--orange); font-weight: bold; font-size: 1.2em; }
+        .theory-box li strong { color: var(--blue-dark); }
+
+        .theory-block { border-radius: 10px; padding: 1rem 1.2rem; margin-top: 0.8rem; }
+        .theory-block h3 { font-size: clamp(1rem, 2.8vw, 1.15rem); margin-bottom: 0.5rem; font-weight: 800; }
+        .theory-block p { margin-bottom: 0.5rem; }
+        .theory-block ul { list-style: none; padding: 0; margin: 0; }
+        .theory-block li { padding: 0.3rem 0 0.3rem 1.3rem; position: relative; }
+        .theory-block li::before { content: '•'; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .theory-block li strong { font-weight: 700; }
+
+        .theory-block-renewable { background: rgba(37, 79, 186, 0.08); border-left: 4px solid var(--blue-600); }
+        .theory-block-renewable h3 { color: var(--blue-600); }
+        .theory-block-renewable li::before { color: var(--blue-600); }
+        .theory-block-renewable li strong { color: var(--blue-dark); }
+
+        .theory-block-nonrenewable { background: rgba(245, 158, 66, 0.08); border-left: 4px solid var(--orange); }
+        .theory-block-nonrenewable h3 { color: var(--orange-700); }
+        .theory-block-nonrenewable li::before { color: var(--orange); }
+        .theory-block-nonrenewable li strong { color: var(--orange-700); }
+
+        /* Juegos genéricos */
+        .game-container-generic {
+            display: flex; flex-direction: column; align-items: center; gap: 1rem;
+            width: 100%; max-width: 800px; margin: 0 auto; flex: 1;
+        }
+        .image-display {
+            width: 100%; display: flex; justify-content: center; align-items: center;
+            background: transparent; padding: 0; border: none; box-shadow: none; border-radius: 0;
+        }
+        .image-display img {
+            width: 100%; height: auto; max-height: 350px; object-fit: contain;
+            border-radius: 10px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+            transition: transform 0.3s;
+        }
+        .image-display img:hover { transform: scale(1.03); }
+
+        /* Lista desplegable */
+        .custom-select-wrapper { position: relative; user-select: none; width: 100%; max-width: 400px; z-index: 50; }
+        .custom-select { position: relative; display: flex; flex-direction: column; }
+        .custom-select__trigger { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 1.2rem; font-size: 1rem; font-weight: 500; color: var(--blue-700); height: 50px; line-height: 50px; background: #fff; border: 2px solid var(--blue-600); border-radius: 10px; cursor: pointer; transition: border-color 0.2s; }
+        .custom-select__trigger:hover { border-color: var(--orange); }
+        .custom-select__trigger::after { content: ''; width: 10px; height: 10px; border-right: 2px solid var(--blue-700); border-bottom: 2px solid var(--blue-700); transform: rotate(45deg); margin-top: -5px; transition: transform 0.2s; }
+        .custom-select.open .custom-select__trigger::after { transform: rotate(-135deg); margin-top: 5px; }
+        .custom-options { position: absolute; display: block; top: auto; bottom: 100%; left: 0; right: 0; background: #fff; border: 2px solid var(--blue-600); border-bottom: 0; border-radius: 10px 10px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); opacity: 0; visibility: hidden; pointer-events: none; z-index: 100; max-height: 250px; overflow-y: auto; transform: translateY(10px); transition: all 0.3s; }
+        .custom-select.open .custom-options { opacity: 1; visibility: visible; pointer-events: all; transform: translateY(0); }
+        .custom-option { position: relative; display: block; padding: 0 1.2rem; font-size: 1rem; font-weight: 400; color: var(--blue-700); line-height: 42px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .custom-option:hover { background-color: #e6f2ff; color: var(--orange); }
+        .custom-option.selected { background-color: var(--panel); color: var(--blue-dark); font-weight: 700; }
+        .custom-select__trigger.correct { border-color: var(--green); background-color: rgba(46, 204, 113, 0.1); color: var(--green); }
+        .custom-select__trigger.wrong { border-color: var(--red); background-color: rgba(231, 76, 60, 0.1); color: var(--red); animation: shake 0.3s ease-in-out; }
+
+        .action-area { height: 50px; display: flex; align-items: center; justify-content: center; }
+
+        /* ====== JUEGO 1: EMPAREJAR EN GRID ====== */
+        .game1-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+            align-content: start;
+        }
+        .game1-card {
+            background-color: var(--card-base); color: white; border: 4px solid transparent;
+            border-radius: 10px; padding: 10px 12px; min-height: 70px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: clamp(0.78rem, 1.8vw, 0.95rem); text-align: center;
+            cursor: pointer; transition: all 0.2s ease; user-select: none; position: relative;
+            line-height: 1.3;
+        }
+        .game1-card:hover:not(.matched):not(.selected) { transform: scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .game1-card.selected { background-color: var(--card-selected); border-color: transparent; color: white; animation: pulse 1s infinite; }
+        .game1-card.matched { background-color: var(--green); border-color: transparent; color: white; transform: scale(1); cursor: default; opacity: 1; box-shadow: 0 3px 10px rgba(46, 204, 113, 0.35); }
+        .game1-card.flash-error { animation: shake 0.3s ease-in-out; border-color: var(--red); background-color: var(--red); }
+
+        @media (min-width: 520px) {
+            .game1-grid { gap: 12px; padding: 0.8rem; }
+            .game1-card { min-height: 80px; font-size: clamp(0.88rem, 2vw, 1.05rem); padding: 12px 16px; border-radius: 12px; border-width: 4px; }
+        }
+        @media (min-width: 800px) {
+            .game1-grid { gap: 14px; padding: 1rem; }
+            .game1-card { min-height: 90px; font-size: clamp(0.95rem, 2.2vw, 1.15rem); padding: 14px 18px; border-radius: 14px; border-width: 5px; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Juego 2: Dropdowns fila */
+        .game2-text-display { display: flex; align-items: center; justify-content: center; gap: 0.8rem; width: 100%; }
+        .game2-text { font-size: clamp(1.2rem, 3.5vw, 1.6rem); color: var(--blue-dark); font-weight: 700; text-align: center; }
+        .game2-play-btn { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-700)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; }
+        .game2-play-btn:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(245,158,66,.4); }
+        .game2-play-btn:active { transform: scale(0.95); }
+        .game2-play-btn svg { width: 18px; height: 18px; fill: white; pointer-events: none; margin-left: 2px; }
+
+        .dropdowns-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 600px;
+            flex-wrap: nowrap;
+        }
+        .dropdowns-row .custom-select-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+        .dropdowns-row .custom-select__trigger {
+            font-size: clamp(0.82rem, 2vw, 0.95rem);
+            padding: 0 0.6rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropdowns-row .custom-option {
+            font-size: clamp(0.82rem, 2vw, 0.95rem);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 0.6rem;
+        }
+
+        /* Juego 3: Grid */
+        .game3-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; max-width: 700px; margin: 0 auto; flex: 1; }
+        .game3-display { display: flex; align-items: center; justify-content: center; gap: 0.8rem; }
+        .game3-text { font-size: clamp(1.2rem, 3.5vw, 1.6rem); color: var(--blue-dark); font-weight: 700; text-align: center; }
+        .game3-play-btn { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-700)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; }
+        .game3-play-btn:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(245,158,66,.4); }
+        .game3-play-btn:active { transform: scale(0.95); }
+        .game3-play-btn svg { width: 18px; height: 18px; fill: white; pointer-events: none; margin-left: 2px; }
+
+        .game3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .game3-cell { aspect-ratio: 4 / 3; border: 3px solid transparent; border-radius: 10px; cursor: pointer; overflow: hidden; transition: border-color 0.15s, background-color 0.15s, box-shadow 0.2s; background: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .game3-cell:hover { border-color: var(--blue-600); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .game3-cell img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .game3-cell.flash-correct { border-color: var(--green); background: rgba(46, 204, 113, 0.15); }
+        .game3-cell.flash-error { border-color: var(--red); background: rgba(231, 76, 60, 0.15); animation: shake 0.3s ease-in-out; }
+
+        /* Juego 4: Definiciones */
+        .game4-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; width: 100%; max-width: 600px; margin: 0 auto; flex: 1; justify-content: center; }
+        .game4-card { background: var(--panel); border-radius: 14px; padding: 1.5rem 1.8rem; width: 100%; text-align: center; font-size: clamp(1.05rem, 3vw, 1.3rem); color: var(--blue-dark); font-weight: 600; line-height: 1.5; border: 3px solid transparent; transition: border-color 0.2s; }
+        .game4-card.flash-error { border-color: var(--red); animation: shake 0.3s ease-in-out; }
+        .game4-buttons { display: flex; gap: 12px; width: 100%; justify-content: center; flex-wrap: nowrap; }
+        .game4-buttons .btn { flex: 1; min-width: 0; font-size: clamp(0.85rem, 2.2vw, 1rem); padding: 0.75rem 0.5rem; }
+
+        /* Pantalla Final */
+        .results{ display:flex; flex-direction:column; align-items:center; gap:.6rem; text-align:center; flex:1; justify-content:center;}
+        .final-title{ color:var(--blue-dark); font-weight:900; }
+        .big-score{ font-size:clamp(2.2rem,6vw,3.4rem); color:var(--blue-600); font-weight:900; }
+        .score-title{ font-size:1.0rem; color:var(--blue-700); margin-top:1rem; }
+        .final-time{ color:var(--blue-700); }
+        
+        #trophyBox { display: none; font-size: clamp(4rem, 10vw, 7rem); margin: .5rem 0; text-align: center; align-self: center; animation: bounce 1s ease infinite; color: var(--orange); line-height: 1; }
+        @keyframes bounce { 0%,100%{ transform: translateY(0) scale(1); } 50%{ transform: translateY(-15px) scale(1.1); } }
+        
+        .credit{ color:var(--blue-700); margin-top:1rem; }
+        #finalMsg { font-size: clamp(1.2rem, 4.2vw, 1.8rem); font-weight: 800; color: var(--blue-700); margin-top: 0.6rem; }
+        .school-logo { display: block; width: 160px; max-width: 28%; height: auto; margin-top: 0.8rem; border-radius: 8px; object-fit: contain; }
+        @media (max-width: 899px) { .school-logo { width: 140px; max-width: 160px; } }
+        @media (max-width: 420px) { .school-logo { width: 110px; max-width: 40%; margin-top: 0.6rem; } }
+
+        /* --- ESTILOS DEL HALL OF FAME --- */
+        .hall-of-fame { background: var(--panel); border-radius: 12px; padding: 1rem; margin-top: 1.5rem; width: 100%; max-width: 600px; }
+        .hall-of-fame-title { color: var(--blue-700); font-weight: 800; font-size: 1.2rem; text-align: center; margin-bottom: 0.8rem; }
+        .hall-of-fame-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .hall-of-fame-table th { background: var(--blue-600); color: white; padding: 0.5rem; text-align: left; }
+        .hall-of-fame-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #ddd; }
+        .hall-of-fame-table tr:last-child td { border-bottom: none; }
+        .hall-of-fame-table tr:nth-child(even) { background-color: rgba(255, 255,255, 0.5); }
+        .hall-of-fame-error, .hall-of-fame-loading { padding: 1rem; text-align: center; color: var(--blue-700); font-style: italic; }
+        .hall-of-fame-error { color: var(--red); }
+
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:1000; }
+        .modal-content { background:white; padding:2rem; border-radius:15px; width:90%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+        .modal-input { width:100%; padding:10px; margin:10px 0; border:2px solid #ddd; border-radius:8px; font-size:1rem; }
+        
+        .confetti{ position:fixed; width:10px; height:10px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:999; }
+        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <button class="mute-btn" id="muteBtn" title="Silenciar/Activar sonido">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+    </button>
+
+    <section class="screen active" id="startScreen">
+        <header>
+            <h1>Las fuentes de energía</h1>
+            <div class="subtitle">Las fuentes son los recursos naturales de los que obtenemos energía.</div>
+        </header>
+        <div class="start-content">
+            <div class="advice-box">
+                <span class="advice-text">Las fuentes renovables son aquellas que no se agotan con el uso o que se regeneran rápidamente: <span class="highlight-keyword">solar</span>, <span class="highlight-keyword">eólica</span> <span class="highlight-keyword">hidráulica</span> y <span class="highlight-keyword">biomasa</span>: las fuentes no renovables se agotan con su uso. Existe una cantidad limitada: pueden ser combustibles fósiles (restos de seres vivos): <span class="highlight-keyword">carbón</span>, <span class="highlight-keyword">petróleo</span>, <span class="highlight-keyword">gas natural</span> o materiales nucleares: <span class="highlight-keyword">plutonio</span>, <span class="highlight-keyword">uranio</span>.
+                    <strong style="display:block; margin-top:0.5rem; text-align: center;">¡Ánimo!</strong>
+                </span>
+            </div>
+            <button class="btn btn-primary" id="startBtn">Comenzar</button>
+            <div class="hall-of-fame" id="hallOfFame">
+              <div class="hall-of-fame-title">🏆 Mejores puntuaciones 🏆</div>
+              <table class="hall-of-fame-table">
+                  <thead><tr><th>Posición</th><th>Nombre</th><th>Puntos</th><th>Tiempo</th></tr></thead>
+                  <tbody id="hofTableBody"></tbody>
+              </table>
+            </div>
+            <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Kids learning">
+        </div>
+    </section>
+
+    <section class="screen" id="summaryScreen">
+        <header><h1>Diferentes fuentes de energía</h1></header>
+        <div class="theory-content">
+            <div class="theory-box">
+                <h2>Fuentes de energía:</h2>
+                <p>Las fuentes son los recursos naturales de los que obtenemos energía. Pueden ser de dos tipos:</p>
+                <div class="theory-block theory-block-renewable">
+                    <h3>♻️ Renovables</h3>
+                    <p>No se agotan con el uso y contaminan poco. Pueden ser:</p>
+                    <ul>
+                        <li><strong>Eólica:</strong> se obtiene del viento usando aerogeneradores.</li>
+                        <li><strong>Hidroeléctrica:</strong> Se obtiene del agua en centrales hidroeléctricas.</li>
+                        <li><strong>Solar:</strong> Se obtiene del sol mediante paneles solares.</li>
+                        <li><strong>Biomasa:</strong> Se obtiene de restos de plantas y seres vivos.</li>
+                    </ul>
+                </div>
+                <div class="theory-block theory-block-nonrenewable">
+                    <h3>🏭 No renovables</h3>
+                    <p>Sí se agotan con el uso y contaminan mucho. Pueden ser:</p>
+                    <ul>
+                        <li><strong>Combustibles fósiles:</strong> carbón, petróleo y gas natural.</li>
+                        <li><strong>Materiales radiactivos:</strong> uranio y plutonio.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <button class="btn btn-primary" id="playBtn">Jugar</button>
+        </div>
+    </section>
+
+    <section class="screen" id="game1Screen">
+        <header>
+            <h1>¿De dónde procede la energía?</h1>
+            <div class="subtitle">Empareja cada fuente con su origen.</div>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerGame1">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame1"></div></div>
+            <div class="level-indicator">Nivel 1/4</div>
+        </div>
+        <div class="game1-grid" id="game1Grid"></div>
+    </section>
+
+    <section class="screen notranslate" id="game2Screen" lang="en" translate="no">
+        <header>
+            <h1>Identify the energy sources</h1>
+            <div class="subtitle">Select the correct energy source from the <span class="highlight-keyword">dropdown lists</span>.</div>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerGame2">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame2"></div></div>
+            <div class="level-indicator">Nivel 2/4</div>
+        </div>
+        <div class="game-container-generic">
+            <div class="image-display" id="game2Display"></div>
+            <div class="game2-text-display">
+                <div class="game2-text" id="game2Text"></div>
+                <button class="game2-play-btn" id="game2PlayBtn" title="Listen">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+            </div>
+            <div class="dropdowns-row">
+                <div class="custom-select-wrapper">
+                    <div class="custom-select" id="selectGame2_Renewable">
+                        <div class="custom-select__trigger"><span>Renewable</span></div>
+                        <div class="custom-options">
+                            <span class="custom-option" data-value="Solar energy">Solar energy</span>
+                            <span class="custom-option" data-value="Wind energy">Wind energy</span>
+                            <span class="custom-option" data-value="Water energy">Water energy</span>
+                            <span class="custom-option" data-value="Biomass">Biomass</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select" id="selectGame2_NonRenewable">
+                        <div class="custom-select__trigger"><span>Artificial materials</span></div>
+                        <div class="custom-options">
+                            <span class="custom-option" data-value="Coal">Coal</span>
+                            <span class="custom-option" data-value="Oil">Oil</span>
+                            <span class="custom-option" data-value="Natural gas">Natural gas</span>
+                            <span class="custom-option" data-value="Nuclear materials">Nuclear materials</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="action-area">
+                <button class="btn btn-primary" id="checkBtnGame2">Comprobar</button>
+                <button class="btn btn-primary" id="continueBtnGame2" style="display:none;">Continuar</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen notranslate" id="game3Screen" lang="en" translate="no">
+        <header><h1>Identify the energy sources</h1></header>
+        <div class="game-info">
+            <div class="timer" id="timerGame3">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame3"></div></div>
+            <div class="level-indicator">Nivel 3/4</div>
+        </div>
+        <div class="game3-wrapper">
+            <div class="game3-display">
+                <div class="game3-text" id="game3Text"></div>
+                <button class="game3-play-btn" id="game3PlayBtn" title="Listen">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+            </div>
+            <div class="game3-grid" id="game3Grid"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="game4Screen">
+        <header>
+            <h1>¿Fuente renovable o no renovable?</h1>
+            <div class="subtitle">Lee las definiciones y selecciona el tipo de fuente.</div>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerGame4">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame4"></div></div>
+            <div class="level-indicator">Nivel 4/4</div>
+        </div>
+        <div class="game4-wrapper">
+            <div class="game4-card" id="game4Card">
+                <span id="game4Text"></span>
+            </div>
+            <div class="game4-buttons" id="game4Buttons">
+                <button class="btn btn-green" id="btnRenovable">♻️ Renovable</button>
+                <button class="btn btn-red" id="btnNoRenovable">🏭 No renovable</button>
+            </div>
+            <div class="action-area" id="game4Action"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="finalScreen">
+        <header><h1 class="final-title">Fuentes de energía</h1></header>
+        <div class="results">
+            <div id="trophyBox">🏆</div>
+            <div class="score-title">Puntuación:</div>
+            <div class="big-score" id="finalScore">0</div>
+            <div class="final-time">Tiempo: <span id="finalTime">00:00.0</span></div>
+            <div id="finalMsg" class="subtitle"></div>
+            <button class="btn btn-primary" id="backToMenuBtn" style="background:var(--orange);">Volver al menú</button>
+            <span class="credit">Creado por Manuel J. Ventura</span>
+            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="School logo" />
+        </div>
+    </section>
+</div>
+
+<div id="submitModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>¡Juego Terminado!</h3>
+        <p>Tu tiempo: <span id="modalTime">00:00.0</span></p>
+        <input type="text" id="playerName" class="modal-input" placeholder="Nombre" maxlength="15">
+        <input type="text" id="playerSurname" class="modal-input" placeholder="Apellido" maxlength="20">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="submitScoreBtn" class="btn btn-primary">Guardar</button>
+            <button id="discardScoreBtn" class="btn btn-ghost">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SHEET_NAME = "Fuentes";
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXaTeZczyTg43AjfomeGov1WvmndAxl30YQkuNCk_2kDbQegsO4amWubjl5DBa0QNDgw/exec";
+    
+    let soundEnabled = true;
+    let isMuted = false;
+    let audioCtxRef = null;
+    let startTime = 0;
+    let timerInterval = null;
+    let elapsed = 0;
+    let finalTimeVal = 0;
+    let finalScoreVal = 0;
+    const MIN_ATTEMPTS = 30;
+    let totalAttempts = 0;
+
+    const audioUrls = {
+        correct: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Correcto.mp3',
+        error: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Error.mp3',
+        tap: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3',
+        victory: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Termin%C3%A9.mp3',
+        completed: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Completado.mp3'
+    };
+    
+    const audioObjects = {};
+    Object.keys(audioUrls).forEach(key => { 
+        const a = new Audio();
+        a.src = audioUrls[key];
+        a.preload = 'auto';
+        audioObjects[key] = a; 
+    });
+
+    function reproducirSonidoCorrecto() { if (!soundEnabled || isMuted) return; const a = audioObjects['correct']; if(!a) return; try { a.currentTime = 0; a.play(); } catch(e){} }
+    function reproducirSonidoError() { if (!soundEnabled || isMuted) return; const a = audioObjects['error']; if(!a) return; try { a.currentTime = 0; a.play(); } catch(e){} }
+    function reproducirSonidoVictoria() { if (!soundEnabled || isMuted) return; const a = audioObjects['victory']; if(!a) return; try { a.currentTime = 0; a.play(); } catch(e){} }
+    function reproducirSonidoCompletado() { if (!soundEnabled || isMuted) return; const a = audioObjects['completed']; if(!a) return; try { a.currentTime = 0; a.play(); } catch(e){} }
+    function reproducirSonidoTap() { if (!soundEnabled || isMuted) return; const a = audioObjects['tap']; if(!a) return; try { a.currentTime = 0; a.play(); } catch(e){} }
+
+    function unlockAudioContext() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            if (ctx.state === 'suspended') { ctx.resume(); }
+            const buffer = ctx.createBuffer(1, 1, 22050);
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(ctx.destination);
+            source.start();
+            audioCtxRef = ctx;
+        } catch(e) {}
+    }
+
+    let ttsForced = false;
+    function forceInitTTS() {
+        if (ttsForced) return;
+        if (window.speechSynthesis.getVoices().length > 0) { ttsForced = true; return; }
+        const u = new SpeechSynthesisUtterance('');
+        u.volume = 0;
+        window.speechSynthesis.speak(u);
+        ttsForced = true;
+    }
+
+    function getBestVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        let v = voices.find(voice => voice.name.includes('Google UK English'));
+        if (v) return v;
+        v = voices.find(voice => voice.lang === 'en-GB' && (voice.name.includes('Microsoft') || voice.name.includes('Natural')));
+        if (v) return v;
+        v = voices.find(voice => voice.lang === 'en-GB');
+        if (v) return v;
+        return null;
+    }
+
+    function speakText(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        const voice = getBestVoice();
+        if (voice) u.voice = voice;
+        u.lang = 'en-GB';
+        u.rate = 0.85;
+        window.speechSynthesis.speak(u);
+    }
+
+    const svgSoundOn = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    const svgSoundOff = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+
+    function toggleSound() {
+        if (isMuted) {
+            isMuted = false; soundEnabled = true;
+            document.getElementById('muteBtn').innerHTML = svgSoundOn;
+            reproducirSonidoTap();
+        } else {
+            isMuted = true; soundEnabled = false;
+            document.getElementById('muteBtn').innerHTML = svgSoundOff;
+        }
+    }
+
+    /* ====== DATOS ====== */
+    const game1Data = [
+        { id: 1, term: 'Solar', def: 'Luz y el calor del sol' },
+        { id: 2, term: 'Eólica', def: 'El viento mueve turbinas' },
+        { id: 3, term: 'Hidroeléctrica', def: 'Corrientes de agua mueven turbinas' },
+        { id: 4, term: 'Biomasa', def: 'Restos de seres vivos' },
+        { id: 5, term: 'Combustibles fósiles', def: 'Restos de plantas y animales de hace millones de años (carbón, petróleo y gas)' },
+        { id: 6, term: 'Materiales radiactivos', def: 'Elementos que emiten energía, como el uranio y el plutonio' }
+    ];
+
+    const game2Data = [
+        { type: 'Solar energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Solar.png' },
+        { type: 'Wind energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/eolico.png' },
+        { type: 'Water energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Hidraulica.png' },
+        { type: 'Biomass', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Biomasa.png' },
+        { type: 'Coal', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Carbon.png' },
+        { type: 'Oil', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Petroleo.png' },
+        { type: 'Natural gas', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Gas.png' },
+        { type: 'Nuclear materials', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Nuclear.png' }
+    ];
+
+    const game3Data = [
+        { type: 'Solar energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Solar.png' },
+        { type: 'Wind energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/eolico.png' },
+        { type: 'Water energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Hidraulica.png' },
+        { type: 'Biomass', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Biomasa.png' },
+        { type: 'Coal', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Carbon.png' },
+        { type: 'Oil', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Petroleo.png' },
+        { type: 'Natural gas', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Gas.png' },
+        { type: 'Nuclear energy', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Fuentes/Nuclear.png' }
+    ];
+
+    const game4Data = [
+        { type: 'renovable', text: 'Contamina poco' },
+        { type: 'renovable', text: 'Obtienen una cantidad de energía medrada' },
+        { type: 'renovable', text: 'No se agotan o se regeneran muy rápidamente' },
+        { type: 'renovable', text: 'Procede del sol, viento, agua y restos orgánicos' },
+        { type: 'no_renovable', text: 'Contaminan mucho: aire, agua y suelo' },
+        { type: 'no_renovable', text: 'Se obtiene una gran cantidad de energía' },
+        { type: 'no_renovable', text: 'Se agotan con el tiempo, existe una cantidad limitada' },
+        { type: 'no_renovable', text: 'Procede de combustibles fósiles o materiales radiactivos' }
+    ];
+
+    /* ====== UTILIDADES ====== */
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function startGlobalTimer() {
+        stopTimer();
+        startTime = Date.now();
+        elapsed = 0;
+        timerInterval = setInterval(() => {
+            const delta = (Date.now() - startTime) / 1000;
+            elapsed = delta;
+            const timeStr = formatTime(delta);
+            if(document.getElementById('timerGame1')) document.getElementById('timerGame1').textContent = timeStr;
+            if(document.getElementById('timerGame2')) document.getElementById('timerGame2').textContent = timeStr;
+            if(document.getElementById('timerGame3')) document.getElementById('timerGame3').textContent = timeStr;
+            if(document.getElementById('timerGame4')) document.getElementById('timerGame4').textContent = timeStr;
+        }, 100);
+    }
+
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = Math.floor(sec % 60).toString().padStart(2, '0');
+        const ms = Math.round((sec % 1) * 10);
+        return `${m}:${s}.${ms}`;
+    }
+
+    function updateProgress(id, pct) { document.getElementById(id).style.width = pct + '%'; }
+
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function calcularPuntuacionFinal() {
+        const score = 100 - ((totalAttempts - MIN_ATTEMPTS) * (100 / MIN_ATTEMPTS));
+        return Math.max(0, Math.round(score));
+    }
+
+    /* ====== INICIO ====== */
+    document.getElementById('startBtn').onclick = () => { 
+        reproducirSonidoTap(); unlockAudioContext(); forceInitTTS(); showScreen('summaryScreen'); 
+    };
+    
+    document.getElementById('playBtn').onclick = () => { 
+        reproducirSonidoTap(); totalAttempts = 0; startGlobalTimer(); initGame1();
+    };
+
+    /* ====== JUEGO 1: EMPAREJAR EN GRID ====== */
+    let selectedCard1 = null;
+    let matchesFound1 = 0;
+    const totalMatches1 = 6;
+
+    function initGame1() {
+        showScreen('game1Screen');
+        matchesFound1 = 0; selectedCard1 = null;
+        updateProgress('progressFillGame1', 0);
+        const grid = document.getElementById('game1Grid');
+        grid.innerHTML = '';
+        let cards = [];
+        game1Data.forEach(d => {
+            cards.push({ pairId: d.id, role: 'term', content: d.term });
+            cards.push({ pairId: d.id, role: 'def', content: d.def });
+        });
+        cards = shuffle(cards);
+        cards.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'game1-card';
+            card.dataset.pairId = c.pairId;
+            card.dataset.role = c.role;
+            card.textContent = c.content;
+            card.onclick = () => selectGame1Card(card);
+            grid.appendChild(card);
+        });
+    }
+
+    function selectGame1Card(card) {
+        if (card.classList.contains('matched')) return;
+        if (!selectedCard1) {
+            reproducirSonidoTap();
+            card.classList.add('selected');
+            selectedCard1 = card;
+        } else {
+            if (selectedCard1 === card) {
+                card.classList.remove('selected');
+                selectedCard1 = null;
+                return;
+            }
+            totalAttempts++;
+            const id1 = selectedCard1.dataset.pairId;
+            const id2 = card.dataset.pairId;
+            if (id1 === id2) {
+                reproducirSonidoCorrecto();
+                matchesFound1++;
+                selectedCard1.classList.remove('selected');
+                selectedCard1.classList.add('matched');
+                card.classList.add('matched');
+                selectedCard1 = null;
+                updateProgress('progressFillGame1', (matchesFound1 / totalMatches1) * 100);
+                if (matchesFound1 === totalMatches1) { setTimeout(initGame2, 800); }
+            } else {
+                reproducirSonidoError();
+                selectedCard1.classList.add('flash-error');
+                card.classList.add('flash-error');
+                const s1 = selectedCard1;
+                const s2 = card;
+                setTimeout(() => { s1.classList.remove('selected', 'flash-error'); s2.classList.remove('flash-error'); }, 300);
+                selectedCard1 = null;
+            }
+        }
+    }
+
+    /* ====== JUEGO 2: IDENTIFICAR FUENTES CON DOS DROPDOWNS ====== */
+    let game2Items = [];
+    let currentIndex2 = 0;
+    let currentSelection2 = null;
+    const totalItems2 = 8;
+
+    const selectRenewable = document.getElementById('selectGame2_Renewable');
+    const selectNonRenewable = document.getElementById('selectGame2_NonRenewable');
+    const triggerRenewable = selectRenewable.querySelector('.custom-select__trigger');
+    const triggerNonRenewable = selectNonRenewable.querySelector('.custom-select__trigger');
+    const optionsRenewable = selectRenewable.querySelectorAll('.custom-option');
+    const optionsNonRenewable = selectNonRenewable.querySelectorAll('.custom-option');
+
+    function closeAllDropdownsGame2() {
+        selectRenewable.classList.remove('open');
+        selectNonRenewable.classList.remove('open');
+    }
+
+    triggerRenewable.addEventListener('click', (e) => { e.stopPropagation(); closeAllDropdownsGame2(); selectRenewable.classList.toggle('open'); reproducirSonidoTap(); });
+    triggerNonRenewable.addEventListener('click', (e) => { e.stopPropagation(); closeAllDropdownsGame2(); selectNonRenewable.classList.toggle('open'); reproducirSonidoTap(); });
+
+    optionsRenewable.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if(!selectRenewable.classList.contains('open')) return;
+            closeAllDropdownsGame2();
+            triggerRenewable.querySelector('span').textContent = this.textContent;
+            selectRenewable.classList.add('selected');
+            currentSelection2 = this.getAttribute('data-value');
+            triggerRenewable.classList.remove('correct', 'wrong');
+            triggerNonRenewable.classList.remove('correct', 'wrong', 'selected');
+            triggerNonRenewable.querySelector('span').textContent = 'Artificial materials';
+            reproducirSonidoTap();
+        });
+    });
+
+    optionsNonRenewable.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if(!selectNonRenewable.classList.contains('open')) return;
+            closeAllDropdownsGame2();
+            triggerNonRenewable.querySelector('span').textContent = this.textContent;
+            selectNonRenewable.classList.add('selected');
+            currentSelection2 = this.getAttribute('data-value');
+            triggerNonRenewable.classList.remove('correct', 'wrong');
+            triggerRenewable.classList.remove('correct', 'wrong', 'selected');
+            triggerRenewable.querySelector('span').textContent = 'Renewable';
+            reproducirSonidoTap();
+        });
+    });
+
+    document.addEventListener('click', () => { closeAllDropdownsGame2(); });
+
+    document.getElementById('game2PlayBtn').onclick = () => {
+        reproducirSonidoTap();
+        if (game2Items[currentIndex2]) speakText(game2Items[currentIndex2].type);
+    };
+
+    document.getElementById('checkBtnGame2').onclick = checkAnswerGame2;
+    document.getElementById('continueBtnGame2').onclick = () => { reproducirSonidoTap(); nextLevelGame2(); };
+
+    function resetSelectGame2(selectEl, defaultText) {
+        selectEl.classList.remove('selected');
+        selectEl.querySelector('.custom-select__trigger span').textContent = defaultText;
+        selectEl.querySelector('.custom-select__trigger').classList.remove('correct', 'wrong');
+    }
+
+    function initGame2() {
+        showScreen('game2Screen');
+        currentIndex2 = 0; currentSelection2 = null;
+        updateProgress('progressFillGame2', 0);
+        game2Items = shuffle([...game2Data]);
+        loadQuestionGame2();
+    }
+
+    function loadQuestionGame2() {
+        const item = game2Items[currentIndex2];
+        document.getElementById('game2Display').innerHTML = `<img src="${item.img}" alt="${item.type}">`;
+        document.getElementById('game2Text').textContent = item.type;
+        resetSelectGame2(selectRenewable, 'Renewable');
+        resetSelectGame2(selectNonRenewable, 'Artificial materials');
+        currentSelection2 = null;
+        document.getElementById('checkBtnGame2').style.display = 'inline-flex';
+        document.getElementById('continueBtnGame2').style.display = 'none';
+        setTimeout(() => { speakText(item.type); }, 200);
+    }
+
+    function checkAnswerGame2() {
+        if (!currentSelection2) { return; }
+        window.speechSynthesis.cancel();
+        totalAttempts++;
+        const correctType = game2Items[currentIndex2].type;
+        if (currentSelection2 === correctType) {
+            reproducirSonidoCorrecto();
+            if (selectRenewable.classList.contains('selected')) {
+                triggerRenewable.classList.add('correct');
+            } else {
+                triggerNonRenewable.classList.add('correct');
+            }
+            setTimeout(nextLevelGame2, 200);
+        } else {
+            reproducirSonidoError();
+            if (selectRenewable.classList.contains('selected')) {
+                triggerRenewable.classList.add('wrong');
+            } else {
+                triggerNonRenewable.classList.add('wrong');
+            }
+            document.getElementById('checkBtnGame2').style.display = 'none';
+            document.getElementById('continueBtnGame2').style.display = 'inline-flex';
+        }
+    }
+
+    function nextLevelGame2() {
+        currentIndex2++;
+        updateProgress('progressFillGame2', (currentIndex2 / totalItems2) * 100);
+        if (currentIndex2 < totalItems2) { loadQuestionGame2(); } else { initGame3(); }
+    }
+
+    /* ====== JUEGO 3: SEÑALAR FUENTES EN GRID ====== */
+    let game3GridItems = [];
+    let game3QuestionItems = [];
+    let game3CurrentIndex = 0;
+    let game3CorrectCount = 0;
+    const totalItems3 = 8;
+
+    document.getElementById('game3PlayBtn').onclick = () => {
+        reproducirSonidoTap();
+        if (game3QuestionItems[game3CurrentIndex]) speakText(game3QuestionItems[game3CurrentIndex].type);
+    };
+
+    function initGame3() {
+        showScreen('game3Screen');
+        game3CurrentIndex = 0; game3CorrectCount = 0;
+        updateProgress('progressFillGame3', 0);
+        game3GridItems = shuffle([...game3Data]);
+        game3QuestionItems = shuffle([...game3Data]);
+        const grid = document.getElementById('game3Grid');
+        grid.innerHTML = '';
+        game3GridItems.forEach((item, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'game3-cell'; cell.dataset.index = index; cell.dataset.type = item.type;
+            cell.innerHTML = `<img src="${item.img}" alt="${item.type}">`;
+            cell.onclick = () => handleGame3CellClick(cell);
+            grid.appendChild(cell);
+        });
+        loadGame3Question();
+    }
+
+    function loadGame3Question() {
+        const item = game3QuestionItems[game3CurrentIndex];
+        document.getElementById('game3Text').textContent = item.type;
+        setTimeout(() => { speakText(item.type); }, 200);
+    }
+
+    function handleGame3CellClick(cell) {
+        window.speechSynthesis.cancel();
+        totalAttempts++;
+        const cellType = cell.dataset.type;
+        const correctType = game3QuestionItems[game3CurrentIndex].type;
+        if (cellType === correctType) {
+            reproducirSonidoCorrecto(); cell.classList.add('flash-correct');
+            setTimeout(() => {
+                cell.classList.remove('flash-correct'); game3CurrentIndex++; game3CorrectCount++;
+                updateProgress('progressFillGame3', (game3CurrentIndex / totalItems3) * 100);
+                if (game3CurrentIndex < totalItems3) { loadGame3Question(); } else { initGame4(); }
+            }, 200);
+        } else {
+            reproducirSonidoError(); cell.classList.add('flash-error');
+            setTimeout(() => { cell.classList.remove('flash-error'); }, 200);
+        }
+    }
+
+    /* ====== JUEGO 4: IDENTIFICAR DEFINICIONES ====== */
+    let game4Items = [];
+    let game4CurrentIndex = 0;
+    const totalItems4 = 8;
+
+    document.getElementById('btnRenovable').onclick = () => checkAnswerGame4('renovable');
+    document.getElementById('btnNoRenovable').onclick = () => checkAnswerGame4('no_renovable');
+
+    function initGame4() {
+        showScreen('game4Screen');
+        game4CurrentIndex = 0;
+        updateProgress('progressFillGame4', 0);
+        game4Items = shuffle([...game4Data]);
+        loadQuestionGame4();
+    }
+
+    function loadQuestionGame4() {
+        const item = game4Items[game4CurrentIndex];
+        document.getElementById('game4Text').textContent = item.text;
+        document.getElementById('game4Card').classList.remove('flash-error');
+        document.getElementById('game4Buttons').style.display = 'flex';
+        document.getElementById('game4Action').innerHTML = '';
+    }
+
+    function checkAnswerGame4(answer) {
+        window.speechSynthesis.cancel();
+        totalAttempts++;
+        const correctType = game4Items[game4CurrentIndex].type;
+        if (answer === correctType) {
+            reproducirSonidoCorrecto();
+            game4CurrentIndex++;
+            updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
+            if (game4CurrentIndex < totalItems4) {
+                setTimeout(loadQuestionGame4, 200);
+            } else {
+                setTimeout(finishGame, 200);
+            }
+        } else {
+            reproducirSonidoError();
+            document.getElementById('game4Card').classList.add('flash-error');
+            document.getElementById('game4Buttons').style.display = 'none';
+            const actionArea = document.getElementById('game4Action');
+            actionArea.innerHTML = '<button class="btn btn-primary" id="continueBtnGame4">Continuar</button>';
+            document.getElementById('continueBtnGame4').onclick = () => {
+                reproducirSonidoTap();
+                game4CurrentIndex++;
+                updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
+                if (game4CurrentIndex < totalItems4) {
+                    loadQuestionGame4();
+                } else {
+                    finishGame();
+                }
+            };
+        }
+    }
+
+    /* ====== FINALIZAR ====== */
+    function finishGame() {
+        window.speechSynthesis.cancel();
+        stopTimer();
+        finalTimeVal = elapsed;
+        finalScoreVal = calcularPuntuacionFinal();
+        document.getElementById('finalScore').textContent = finalScoreVal;
+        document.getElementById('finalTime').textContent = formatTime(finalTimeVal);
+        const trophyBox = document.getElementById('trophyBox');
+        const msg = document.getElementById('finalMsg');
+        if (finalScoreVal === 100) {
+            trophyBox.style.display = 'block'; msg.textContent = '¡Genial! ¡Puntuación perfecta!';
+            reproducirSonidoVictoria(); createConfetti();
+        } else if (finalScoreVal >= 80) {
+            trophyBox.style.display = 'none'; msg.textContent = 'Casi lo logras. ¡Sigue practicando!'; reproducirSonidoCompletado();
+        } else if (finalScoreVal >= 50) {
+            trophyBox.style.display = 'none'; msg.textContent = 'No está mal, pero aún puedes hacerlo mejor'; reproducirSonidoCompletado();
+        } else {
+            trophyBox.style.display = 'none'; msg.textContent = 'Vaya desastre... ¿Seguro que has estudiado?'; reproducirSonidoCompletado();
+        }
+        showScreen('finalScreen');
+        showSubmitModal(finalTimeVal, finalScoreVal);
+    }
+
+    function createConfetti() {
+        for(let i=0;i<100;i++){
+            setTimeout(()=>{
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                const x = Math.random() * window.innerWidth;
+                const tx = (Math.random() - 0.5) * 200;
+                c.style.left = x + 'px'; c.style.top = '-10px';
+                c.style.backgroundColor = ['#ff595e','#1982c4','#6a4c93','#ffca3a','#8ac926'][Math.floor(Math.random()*5)];
+                c.style.setProperty('--tx', tx + 'px');
+                c.style.setProperty('--ty', window.innerHeight + 20 + 'px');
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, i * 20);
+        }
+    }
+
+    /* ====== HALL OF FAME ====== */
+    let isHofLoading = false;
+
+    function loadHallOfFame() {
+        if (isHofLoading) return;
+        isHofLoading = true;
+        const tbody = document.getElementById('hofTableBody');
+        tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">Cargando datos...</td></tr>';
+        const url = `${APP_SCRIPT_URL}?action=read&sheet=${SHEET_NAME}`;
+        const timeoutId = setTimeout(() => {
+            if(isHofLoading) { tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-error">Error de conexión (Timeout).</td></tr>'; isHofLoading = false; }
+        }, 8000);
+        fetch(url)
+            .then(r => { clearTimeout(timeoutId); if(!r.ok) throw new Error("Network response was not ok"); return r.json(); })
+            .then(data => {
+                if (data.status === 'success' && data.data) {
+                    const processedData = data.data.map(row => {
+                        const getVal = (keys) => { for(let key of keys) { if(row[key] !== undefined && row[key] !== "") return row[key]; } return null; };
+                        return { Nombre: getVal(["Nombre", "nombre", "name"]), Apellidos: getVal(["Apellidos", "apellidos", "surname"]), Puntuación: getVal(["Puntuación", "puntuación", "score"]), Tiempo: getVal(["Tiempo", "tiempo", "time"]) };
+                    });
+                    const validData = processedData.filter(row => row.Puntuación !== null && !isNaN(parseFloat(row.Puntuación)));
+                    if (validData.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">¡Sé el primero en guardar tu puntuación!</td></tr>';
+                    } else {
+                        validData.sort((a, b) => {
+                            const scoreA = parseFloat(a.Puntuación) || 0; const scoreB = parseFloat(b.Puntuación) || 0;
+                            if (scoreB !== scoreA) return scoreB - scoreA;
+                            const timeA = parseFloat(a.Tiempo) || 9999; const timeB = parseFloat(b.Tiempo) || 9999;
+                            return timeA - timeB;
+                        });
+                        tbody.innerHTML = '';
+                        const top10 = validData.slice(0, 10);
+                        for (let i = 0; i < top10.length; i++) {
+                            const item = top10[i];
+                            const tr = document.createElement('tr');
+                            const displayName = `${item.Nombre} ${item.Apellidos}`.trim();
+                            let timeStr = item.Tiempo;
+                            if (!isNaN(parseFloat(item.Tiempo))) { timeStr = formatTime(parseFloat(item.Tiempo)); }
+                            const points = item.Puntuación || 0;
+                            tr.innerHTML = `<td>${i + 1}º</td><td>${displayName}</td><td>${points}</td><td>${timeStr}</td>`;
+                            tbody.appendChild(tr);
+                        }
+                    }
+                } else { tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-error">Error de datos.</td></tr>'; }
+            })
+            .catch(e => { clearTimeout(timeoutId); console.error("Error HoF:", e); tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-error">Error de conexión.</td></tr>'; })
+            .finally(() => { isHofLoading = false; });
+    }
+
+    function showSubmitModal(time, score) {
+        document.getElementById('modalTime').textContent = formatTime(time);
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerSurname').value = '';
+        document.getElementById('submitModal').style.display = 'flex';
+        const btn = document.getElementById('submitScoreBtn');
+        btn.textContent = "Guardar"; btn.disabled = false;
+        document.getElementById('playerName').focus();
+    }
+
+    function handleSubmitScore() {
+        const btn = document.getElementById('submitScoreBtn');
+        const nameInput = document.getElementById('playerName');
+        const surnameInput = document.getElementById('playerSurname');
+        reproducirSonidoTap();
+        const payload = { score: finalScoreVal, time: finalTimeVal, name: nameInput.value.trim(), surname: surnameInput.value.trim() };
+        if(payload.name && payload.surname) {
+            const originalText = btn.textContent;
+            btn.textContent = "Enviando..."; btn.disabled = true;
+            fetch(APP_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ sheet: SHEET_NAME, action: 'write', data: payload })
+            })
+            .then(() => { document.getElementById('submitModal').style.display = 'none'; btn.textContent = originalText; btn.disabled = false; setTimeout(loadHallOfFame, 1500); })
+            .catch(e => { console.error("Error envío:", e); alert("Error al enviar puntuación."); btn.textContent = originalText; btn.disabled = false; });
+        } else { alert("Por favor, rellena nombre y apellido"); }
+    }
+
+    document.getElementById('submitScoreBtn').onclick = handleSubmitScore;
+    document.getElementById('discardScoreBtn').onclick = () => { reproducirSonidoTap(); document.getElementById('submitModal').style.display = 'none'; };
+    document.getElementById('playerName').addEventListener('keypress', function (e) { if (e.key === 'Enter') { document.getElementById('playerSurname').focus(); } });
+    document.getElementById('playerSurname').addEventListener('keypress', function (e) { if (e.key === 'Enter') { handleSubmitScore(); } });
+    document.getElementById('backToMenuBtn').onclick = () => { reproducirSonidoTap(); location.reload(); };
+    document.getElementById('muteBtn').onclick = toggleSound;
+
+    document.addEventListener('DOMContentLoaded', () => { loadHallOfFame(); });
+</script>
+</body>
+</html>
