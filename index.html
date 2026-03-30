@@ -227,6 +227,9 @@
         .game3-play-btn svg { width: 18px; height: 18px; fill: white; pointer-events: none; margin-left: 2px; }
 
         .game3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        @media (min-width: 700px) {
+            .game3-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        }
         .game3-cell { aspect-ratio: 4 / 3; border: 3px solid transparent; border-radius: 10px; cursor: pointer; overflow: hidden; transition: border-color 0.15s, background-color 0.15s, box-shadow 0.2s; background: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .game3-cell:hover { border-color: var(--blue-600); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .game3-cell img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -617,14 +620,14 @@
     ];
 
     const game4Data = [
-        { type: 'renovable', text: 'Contamina poco' },
-        { type: 'renovable', text: 'Obtienen una cantidad de energía moderada' },
+        { type: 'renovable', text: 'Son energías limpias que contaminan muy poco' },
+        { type: 'renovable', text: 'Obtienen una cantidad de energía menor' },
         { type: 'renovable', text: 'No se agotan o se regeneran muy rápidamente' },
         { type: 'renovable', text: 'Procede del sol, viento, agua y restos orgánicos' },
-        { type: 'no_renovable', text: 'Contaminan mucho: aire, agua y suelo' },
+        { type: 'no_renovable', text: 'Desprenden gases y residuos que contaminan mucho: aire, agua y suelo' },
         { type: 'no_renovable', text: 'Se obtiene una gran cantidad de energía' },
         { type: 'no_renovable', text: 'Se agotan con el tiempo, existe una cantidad limitada' },
-        { type: 'no_renovable', text: 'Procede de combustibles fósiles o materiales radiactivos' }
+        { type: 'no_renovable', text: 'Procede de combustibles fósiles o de materiales radiactivos' }
     ];
 
     /* ====== UTILIDADES ====== */
@@ -803,29 +806,29 @@
     document.getElementById('checkBtnGame2').onclick = checkAnswerGame2;
     document.getElementById('continueBtnGame2').onclick = () => { reproducirSonidoTap(); nextLevelGame2(); };
 
-    function clearTriggersGame2() {
-        triggerRenewable.classList.remove('correct', 'wrong');
-        triggerNonRenewable.classList.remove('correct', 'wrong');
-    }
-
-    function initGame2() {
-        showScreen('game2Screen');
-        currentIndex2 = 0; currentSelection2 = null;
-        updateProgress('progressFillGame2', 0);
-        game2Items = shuffle([...game2Data]);
+    function resetDropdownsGame2() {
         triggerRenewable.querySelector('span').textContent = 'Renewable';
         triggerNonRenewable.querySelector('span').textContent = 'Non-renewable';
         selectRenewable.classList.remove('selected');
         selectNonRenewable.classList.remove('selected');
-        clearTriggersGame2();
+        triggerRenewable.classList.remove('correct', 'wrong');
+        triggerNonRenewable.classList.remove('correct', 'wrong');
+        currentSelection2 = null;
+    }
+
+    function initGame2() {
+        showScreen('game2Screen');
+        currentIndex2 = 0;
+        updateProgress('progressFillGame2', 0);
+        game2Items = shuffle([...game2Data]);
+        resetDropdownsGame2();
         loadQuestionGame2();
     }
 
     function loadQuestionGame2() {
         const item = game2Items[currentIndex2];
         document.getElementById('game2Display').innerHTML = `<img src="${item.img}" alt="${item.type}">`;
-        currentSelection2 = null;
-        clearTriggersGame2();
+        resetDropdownsGame2();
         document.getElementById('checkBtnGame2').style.display = 'inline-flex';
         document.getElementById('continueBtnGame2').style.display = 'none';
     }
@@ -841,7 +844,7 @@
             } else {
                 triggerNonRenewable.classList.add('correct');
             }
-            setTimeout(nextLevelGame2, 500);
+            nextLevelGame2();
         } else {
             reproducirSonidoError();
             if (selectRenewable.classList.contains('selected')) {
