@@ -122,9 +122,9 @@
             width: 100%; height: auto; max-height: 350px; object-fit: contain;
             border-radius: 10px;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
-            transition: transform 0.3s;
+            transition: none;
         }
-        .image-display img:hover { transform: scale(1.03); }
+        .image-display img:hover { transform: none; }
 
         /* Lista desplegable */
         .custom-select-wrapper { position: relative; user-select: none; width: 100%; max-width: 400px; z-index: 50; }
@@ -138,7 +138,7 @@
         .custom-option { position: relative; display: block; padding: 0 1.2rem; font-size: 1rem; font-weight: 400; color: var(--blue-700); line-height: 42px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .custom-option:hover { background-color: #e6f2ff; color: var(--orange); }
         .custom-option.selected { background-color: var(--panel); color: var(--blue-dark); font-weight: 700; }
-        .custom-select__trigger.correct { border-color: var(--green); background-color: rgba(46, 204, 113, 0.1); color: var(--green); }
+        .custom-select__trigger.correct { border-color: var(--green); background-color: rgba(46, 204, 113, 0.3); color: #1a8c4e; font-weight: 700; box-shadow: 0 0 16px rgba(46, 204, 113, 0.45); }
         .custom-select__trigger.wrong { border-color: var(--red); background-color: rgba(231, 76, 60, 0.1); color: var(--red); animation: shake 0.3s ease-in-out; }
 
         .action-area { height: 50px; display: flex; align-items: center; justify-content: center; }
@@ -191,13 +191,6 @@
         }
 
         /* Juego 2: Dropdowns fila */
-        .game2-text-display { display: flex; align-items: center; justify-content: center; gap: 0.8rem; width: 100%; }
-        .game2-text { font-size: clamp(1.2rem, 3.5vw, 1.6rem); color: var(--blue-dark); font-weight: 700; text-align: center; }
-        .game2-play-btn { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-700)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; }
-        .game2-play-btn:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(245,158,66,.4); }
-        .game2-play-btn:active { transform: scale(0.95); }
-        .game2-play-btn svg { width: 18px; height: 18px; fill: white; pointer-events: none; margin-left: 2px; }
-
         .dropdowns-row {
             display: flex;
             gap: 8px;
@@ -237,15 +230,45 @@
         .game3-cell { aspect-ratio: 4 / 3; border: 3px solid transparent; border-radius: 10px; cursor: pointer; overflow: hidden; transition: border-color 0.15s, background-color 0.15s, box-shadow 0.2s; background: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .game3-cell:hover { border-color: var(--blue-600); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .game3-cell img { width: 100%; height: 100%; object-fit: contain; display: block; }
-        .game3-cell.flash-correct { border-color: var(--green); background: rgba(46, 204, 113, 0.15); }
+        .game3-cell.flash-correct { border: 5px solid var(--green); background: rgba(46, 204, 113, 0.2); box-shadow: 0 0 20px rgba(46, 204, 113, 0.4); animation: pop-correct 0.45s ease; }
         .game3-cell.flash-error { border-color: var(--red); background: rgba(231, 76, 60, 0.15); animation: shake 0.3s ease-in-out; }
 
+        @keyframes pop-correct {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
         /* Juego 4: Definiciones */
-        .game4-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; width: 100%; max-width: 600px; margin: 0 auto; flex: 1; justify-content: center; }
-        .game4-card { background: var(--panel); border-radius: 14px; padding: 1.5rem 1.8rem; width: 100%; text-align: center; font-size: clamp(1.05rem, 3vw, 1.3rem); color: var(--blue-dark); font-weight: 600; line-height: 1.5; border: 3px solid transparent; transition: border-color 0.2s; }
+        .game4-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; width: 100%; max-width: 600px; margin: 0 auto; flex: 1; justify-content: flex-start; padding-top: 0.5rem; }
+        .game4-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 2.2rem 2rem;
+            width: 100%;
+            text-align: center;
+            font-size: clamp(1.25rem, 3.5vw, 1.6rem);
+            color: var(--blue-dark);
+            font-weight: 600;
+            line-height: 1.6;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .game4-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--blue-600), var(--orange));
+            border-radius: 18px 18px 0 0;
+        }
         .game4-card.flash-error { border-color: var(--red); animation: shake 0.3s ease-in-out; }
-        .game4-buttons { display: flex; gap: 12px; width: 100%; justify-content: center; flex-wrap: nowrap; }
-        .game4-buttons .btn { flex: 1; min-width: 0; font-size: clamp(0.85rem, 2.2vw, 1rem); padding: 0.75rem 0.5rem; }
+        .game4-buttons { display: flex; gap: 14px; width: 100%; justify-content: center; flex-wrap: nowrap; }
+        .game4-buttons .btn { flex: 1; min-width: 0; font-size: clamp(1rem, 2.8vw, 1.2rem); padding: 1.1rem 0.8rem; height: auto; min-height: 80px; border-radius: 14px; letter-spacing: 0.3px; flex-direction: column; gap: 0.3rem; }
+        .game4-buttons .btn-icon { font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1; display: block; }
+        .game4-buttons .btn-label { font-size: clamp(0.95rem, 2.5vw, 1.15rem); display: block; }
 
         /* Pantalla Final */
         .results{ display:flex; flex-direction:column; align-items:center; gap:.6rem; text-align:center; flex:1; justify-content:center;}
@@ -300,6 +323,7 @@
                 </span>
             </div>
             <button class="btn btn-primary" id="startBtn">Comenzar</button>
+            <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Kids learning">
             <div class="hall-of-fame" id="hallOfFame">
               <div class="hall-of-fame-title">🏆 Mejores puntuaciones 🏆</div>
               <table class="hall-of-fame-table">
@@ -307,7 +331,6 @@
                   <tbody id="hofTableBody"></tbody>
               </table>
             </div>
-            <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Kids learning">
         </div>
     </section>
 
@@ -367,12 +390,6 @@
         </div>
         <div class="game-container-generic">
             <div class="image-display" id="game2Display"></div>
-            <div class="game2-text-display">
-                <div class="game2-text" id="game2Text"></div>
-                <button class="game2-play-btn" id="game2PlayBtn" title="Listen">
-                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                </button>
-            </div>
             <div class="dropdowns-row">
                 <div class="custom-select-wrapper">
                     <div class="custom-select" id="selectGame2_Renewable">
@@ -387,7 +404,7 @@
                 </div>
                 <div class="custom-select-wrapper">
                     <div class="custom-select" id="selectGame2_NonRenewable">
-                        <div class="custom-select__trigger"><span>Artificial materials</span></div>
+                        <div class="custom-select__trigger"><span>Non-renewable</span></div>
                         <div class="custom-options">
                             <span class="custom-option" data-value="Coal">Coal</span>
                             <span class="custom-option" data-value="Oil">Oil</span>
@@ -437,10 +454,9 @@
                 <span id="game4Text"></span>
             </div>
             <div class="game4-buttons" id="game4Buttons">
-                <button class="btn btn-green" id="btnRenovable">♻️ Renovable</button>
-                <button class="btn btn-red" id="btnNoRenovable">🏭 No renovable</button>
+                <button class="btn btn-green" id="btnRenovable"><span class="btn-icon">♻️</span><span class="btn-label">Renovable</span></button>
+                <button class="btn btn-red" id="btnNoRenovable"><span class="btn-icon">🏭</span><span class="btn-label">No renovable</span></button>
             </div>
-            <div class="action-area" id="game4Action"></div>
         </div>
     </section>
 
@@ -602,7 +618,7 @@
 
     const game4Data = [
         { type: 'renovable', text: 'Contamina poco' },
-        { type: 'renovable', text: 'Obtienen una cantidad de energía medrada' },
+        { type: 'renovable', text: 'Obtienen una cantidad de energía moderada' },
         { type: 'renovable', text: 'No se agotan o se regeneran muy rápidamente' },
         { type: 'renovable', text: 'Procede del sol, viento, agua y restos orgánicos' },
         { type: 'no_renovable', text: 'Contaminan mucho: aire, agua y suelo' },
@@ -762,7 +778,7 @@
             currentSelection2 = this.getAttribute('data-value');
             triggerRenewable.classList.remove('correct', 'wrong');
             triggerNonRenewable.classList.remove('correct', 'wrong', 'selected');
-            triggerNonRenewable.querySelector('span').textContent = 'Artificial materials';
+            triggerNonRenewable.querySelector('span').textContent = 'Non-renewable';
             reproducirSonidoTap();
         });
     });
@@ -784,18 +800,12 @@
 
     document.addEventListener('click', () => { closeAllDropdownsGame2(); });
 
-    document.getElementById('game2PlayBtn').onclick = () => {
-        reproducirSonidoTap();
-        if (game2Items[currentIndex2]) speakText(game2Items[currentIndex2].type);
-    };
-
     document.getElementById('checkBtnGame2').onclick = checkAnswerGame2;
     document.getElementById('continueBtnGame2').onclick = () => { reproducirSonidoTap(); nextLevelGame2(); };
 
-    function resetSelectGame2(selectEl, defaultText) {
-        selectEl.classList.remove('selected');
-        selectEl.querySelector('.custom-select__trigger span').textContent = defaultText;
-        selectEl.querySelector('.custom-select__trigger').classList.remove('correct', 'wrong');
+    function clearTriggersGame2() {
+        triggerRenewable.classList.remove('correct', 'wrong');
+        triggerNonRenewable.classList.remove('correct', 'wrong');
     }
 
     function initGame2() {
@@ -803,24 +813,25 @@
         currentIndex2 = 0; currentSelection2 = null;
         updateProgress('progressFillGame2', 0);
         game2Items = shuffle([...game2Data]);
+        triggerRenewable.querySelector('span').textContent = 'Renewable';
+        triggerNonRenewable.querySelector('span').textContent = 'Non-renewable';
+        selectRenewable.classList.remove('selected');
+        selectNonRenewable.classList.remove('selected');
+        clearTriggersGame2();
         loadQuestionGame2();
     }
 
     function loadQuestionGame2() {
         const item = game2Items[currentIndex2];
         document.getElementById('game2Display').innerHTML = `<img src="${item.img}" alt="${item.type}">`;
-        document.getElementById('game2Text').textContent = item.type;
-        resetSelectGame2(selectRenewable, 'Renewable');
-        resetSelectGame2(selectNonRenewable, 'Artificial materials');
         currentSelection2 = null;
+        clearTriggersGame2();
         document.getElementById('checkBtnGame2').style.display = 'inline-flex';
         document.getElementById('continueBtnGame2').style.display = 'none';
-        setTimeout(() => { speakText(item.type); }, 200);
     }
 
     function checkAnswerGame2() {
         if (!currentSelection2) { return; }
-        window.speechSynthesis.cancel();
         totalAttempts++;
         const correctType = game2Items[currentIndex2].type;
         if (currentSelection2 === correctType) {
@@ -830,7 +841,7 @@
             } else {
                 triggerNonRenewable.classList.add('correct');
             }
-            setTimeout(nextLevelGame2, 200);
+            setTimeout(nextLevelGame2, 500);
         } else {
             reproducirSonidoError();
             if (selectRenewable.classList.contains('selected')) {
@@ -896,10 +907,10 @@
                 cell.classList.remove('flash-correct'); game3CurrentIndex++; game3CorrectCount++;
                 updateProgress('progressFillGame3', (game3CurrentIndex / totalItems3) * 100);
                 if (game3CurrentIndex < totalItems3) { loadGame3Question(); } else { initGame4(); }
-            }, 200);
+            }, 450);
         } else {
             reproducirSonidoError(); cell.classList.add('flash-error');
-            setTimeout(() => { cell.classList.remove('flash-error'); }, 200);
+            setTimeout(() => { cell.classList.remove('flash-error'); }, 300);
         }
     }
 
@@ -907,6 +918,7 @@
     let game4Items = [];
     let game4CurrentIndex = 0;
     const totalItems4 = 8;
+    let game4Locked = false;
 
     document.getElementById('btnRenovable').onclick = () => checkAnswerGame4('renovable');
     document.getElementById('btnNoRenovable').onclick = () => checkAnswerGame4('no_renovable');
@@ -914,21 +926,22 @@
     function initGame4() {
         showScreen('game4Screen');
         game4CurrentIndex = 0;
+        game4Locked = false;
         updateProgress('progressFillGame4', 0);
         game4Items = shuffle([...game4Data]);
         loadQuestionGame4();
     }
 
     function loadQuestionGame4() {
+        game4Locked = false;
         const item = game4Items[game4CurrentIndex];
         document.getElementById('game4Text').textContent = item.text;
         document.getElementById('game4Card').classList.remove('flash-error');
         document.getElementById('game4Buttons').style.display = 'flex';
-        document.getElementById('game4Action').innerHTML = '';
     }
 
     function checkAnswerGame4(answer) {
-        window.speechSynthesis.cancel();
+        if (game4Locked) return;
         totalAttempts++;
         const correctType = game4Items[game4CurrentIndex].type;
         if (answer === correctType) {
@@ -942,20 +955,16 @@
             }
         } else {
             reproducirSonidoError();
+            game4Locked = true;
             document.getElementById('game4Card').classList.add('flash-error');
             document.getElementById('game4Buttons').style.display = 'none';
-            const actionArea = document.getElementById('game4Action');
-            actionArea.innerHTML = '<button class="btn btn-primary" id="continueBtnGame4">Continuar</button>';
-            document.getElementById('continueBtnGame4').onclick = () => {
-                reproducirSonidoTap();
-                game4CurrentIndex++;
-                updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
-                if (game4CurrentIndex < totalItems4) {
-                    loadQuestionGame4();
-                } else {
-                    finishGame();
-                }
-            };
+            game4CurrentIndex++;
+            updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
+            if (game4CurrentIndex < totalItems4) {
+                setTimeout(loadQuestionGame4, 1200);
+            } else {
+                setTimeout(finishGame, 1200);
+            }
         }
     }
 
