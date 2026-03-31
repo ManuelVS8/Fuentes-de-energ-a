@@ -327,7 +327,7 @@
         </header>
         <div class="start-content">
             <div class="advice-box">
-                <span class="advice-text">Las fuentes renovables son aquellas que no se agotan con el uso o que se regeneran rápidamente: <span class="highlight-keyword">solar</span>, <span class="highlight-keyword">eólica</span> <span class="highlight-keyword">hidráulica</span> y <span class="highlight-keyword">biomasa</span>: las fuentes no renovables se agotan con su uso. Existe una cantidad limitada: pueden ser combustibles fósiles (restos de seres vivos): <span class="highlight-keyword">carbón</span>, <span class="highlight-keyword">petróleo</span>, <span class="highlight-keyword">gas natural</span> o materiales nucleares: <span class="highlight-keyword">plutonio</span>, <span class="highlight-keyword">uranio</span>.
+                <span class="advice-text">Las fuentes renovables son aquellas que no se agotan con el uso o que se regeneran rápidamente: <span class="highlight-keyword">solar</span>, <span class="highlight-keyword">eólica</span> <span class="highlight-keyword">hidráulica</span> y <span class="highlight-keyword">biomasa</span>: las fuentes no renovables se agotan con su uso. Existe una cantidad limitada: pueden ser combustibles fósiles (restos de seres vivos de millones de años): <span class="highlight-keyword">carbón</span>, <span class="highlight-keyword">petróleo</span>, <span class="highlight-keyword">gas natural</span> o materiales nucleares: <span class="highlight-keyword">plutonio</span>, <span class="highlight-keyword">uranio</span>.
                     <strong style="display:block; margin-top:0.5rem; text-align: center;">¡Ánimo!</strong>
                 </span>
             </div>
@@ -356,7 +356,7 @@
                         <li><strong>Eólica:</strong> se obtiene del viento usando aerogeneradores.</li>
                         <li><strong>Hidroeléctrica:</strong> Se obtiene del agua en centrales hidroeléctricas.</li>
                         <li><strong>Solar:</strong> Se obtiene del sol mediante paneles solares.</li>
-                        <li><strong>Biomasa:</strong> Se obtiene de restos de plantas y seres vivos.</li>
+                        <li><strong>Biomasa:</strong> Se obtiene de restos de plantas y animales de bosques y cultivos.</li>
                     </ul>
                 </div>
                 <div class="theory-block theory-block-nonrenewable">
@@ -597,7 +597,7 @@
         { id: 1, term: 'Solar', def: 'Luz y el calor del sol' },
         { id: 2, term: 'Eólica', def: 'El viento mueve turbinas' },
         { id: 3, term: 'Hidroeléctrica', def: 'Corrientes de agua mueven turbinas' },
-        { id: 4, term: 'Biomasa', def: 'Restos de seres vivos' },
+        { id: 4, term: 'Biomasa', def: 'Residuos de animales y plantas de bosques y cultivos' },
         { id: 5, term: 'Combustibles fósiles', def: 'Restos de plantas y animales de hace millones de años (carbón, petróleo y gas)' },
         { id: 6, term: 'Materiales radiactivos', def: 'Elementos que emiten energía, como el uranio y el plutonio' }
     ];
@@ -868,7 +868,6 @@
             } else {
                 triggerNonRenewable.classList.add('correct');
             }
-            /* Sin retardo: pasar directamente a la siguiente imagen */
             nextLevelGame2();
         } else {
             reproducirSonidoError();
@@ -979,6 +978,7 @@
         const correctType = game4Items[game4CurrentIndex].type;
         if (answer === correctType) {
             reproducirSonidoCorrecto();
+            game4Locked = true;
             game4CurrentIndex++;
             updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
             if (game4CurrentIndex < totalItems4) {
@@ -987,17 +987,15 @@
                 setTimeout(finishGame, 200);
             }
         } else {
+            /* Fallo: muestra error, se bloquea brevemente, pero NO avanza de pregunta.
+               El usuario podrá elegir de nuevo y cada nuevo clic contará como intento extra. */
             reproducirSonidoError();
             game4Locked = true;
             document.getElementById('game4Card').classList.add('flash-error');
-            document.getElementById('game4Buttons').style.display = 'none';
-            game4CurrentIndex++;
-            updateProgress('progressFillGame4', (game4CurrentIndex / totalItems4) * 100);
-            if (game4CurrentIndex < totalItems4) {
-                setTimeout(loadQuestionGame4, 1200);
-            } else {
-                setTimeout(finishGame, 1200);
-            }
+            setTimeout(() => {
+                document.getElementById('game4Card').classList.remove('flash-error');
+                game4Locked = false;
+            }, 700);
         }
     }
 
