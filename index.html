@@ -592,6 +592,15 @@
         }
     }
 
+    /* ====== PRECARGA DE IMÁGENES ====== */
+    function preloadImages(urls) {
+        const uniqueUrls = [...new Set(urls)];
+        uniqueUrls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
+
     /* ====== DATOS ====== */
     const game1Data = [
         { id: 1, term: 'Solar', def: 'Luz y el calor del sol' },
@@ -691,7 +700,10 @@
     };
     
     document.getElementById('playBtn').onclick = () => { 
-        reproducirSonidoTap(); totalAttempts = 0; startGlobalTimer(); initGame1();
+        reproducirSonidoTap(); totalAttempts = 0; startGlobalTimer();
+        /* Precargar todas las imágenes de los juegos 2 y 3 en segundo plano mientras el usuario juega el nivel 1 */
+        preloadImages([...game2Data, ...game3Data].map(d => d.img));
+        initGame1();
     };
 
     /* ====== JUEGO 1: EMPAREJAR EN GRID ====== */
@@ -987,8 +999,6 @@
                 setTimeout(finishGame, 200);
             }
         } else {
-            /* Fallo: muestra error, se bloquea brevemente, pero NO avanza de pregunta.
-               El usuario podrá elegir de nuevo y cada nuevo clic contará como intento extra. */
             reproducirSonidoError();
             game4Locked = true;
             document.getElementById('game4Card').classList.add('flash-error');
